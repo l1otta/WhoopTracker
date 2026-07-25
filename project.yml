@@ -1,0 +1,30 @@
+name: WhoopTracker
+options:
+  bundleIdPrefix: com.whooptracker
+  deploymentTarget:
+    iOS: "17.0"
+
+targets:
+  WhoopTracker:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: WhoopTracker
+    info:
+      path: WhoopTracker/Info.plist
+      properties:
+        UILaunchScreen: {}
+        NSBluetoothAlwaysUsageDescription: "Приложению нужен доступ к Bluetooth для подключения к браслету WHOOP и чтения метрик."
+        NSBluetoothPeripheralUsageDescription: "Приложению нужен доступ к Bluetooth для подключения к браслету WHOOP и чтения метрик."
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.whooptracker.app
+        SWIFT_VERSION: "5.9"
+        TARGETED_DEVICE_FAMILY: "1"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        # No signing here on purpose — CI builds an UNSIGNED .ipa. You sign it
+        # yourself on your iPhone via AltStore/SideStore with your own free
+        # Apple ID. See README.md → "Deploy without a Mac".
+        CODE_SIGNING_ALLOWED: "NO"
+        CODE_SIGNING_REQUIRED: "NO"
