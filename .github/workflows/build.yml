@@ -1,0 +1,46 @@
+name: Build unsigned IPA
+
+# Runs on GitHub's hosted macOS runner — this is a real, temporary Mac that
+# GitHub provides for free (with monthly minute limits on public repos).
+# You never touch macOS yourself; you just read the resulting .ipa artifact.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build unsigned .app
+        run: |
+          xcodebuild \
+            -project WhoopTracker.xcodeproj \
+            -scheme WhoopTracker \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            clean build
+
+      - name: Package as unsigned .ipa
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/WhoopTracker.app Payload/
+          zip -r WhoopTracker-unsigned.ipa Payload
+
+      - name: Upload .ipa artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WhoopTracker-unsigned-ipa
+          path: WhoopTracker-unsigned.ipa
+          retention-days: 14
